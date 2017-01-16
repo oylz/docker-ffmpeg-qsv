@@ -11,6 +11,10 @@ COPY MediaServerStudioEssentials2017.tar.gz /work/
 
 COPY libmfx.pc /work/
 
+COPY sys_analyzer_linux.py_.tgz /work/
+
+COPY SRB4_linux64.zip /work/
+
 ENV TARGET_VERSION=3.2.2 \
     IMMS_VERSION=2017 \
     LIBVA_DRIVERS_PATH=/opt/intel/mediasdk/lib64 \
@@ -58,6 +62,17 @@ RUN yum install -y --enablerepo=extras epel-release yum-utils && \
     ln -s /opt/intel/mediasdk/include/ /usr/local/include/mfx && \
     cd /work && \
     rm -rf /work/MediaServerStudio* && \
+    # Install Intel OpenCL driver
+    mkdir /work/intel-opencl && \
+    mv /work/SRB4_linux64.zip /work/intel-opencl/ && \
+    cd /work/intel-opencl && \
+    unzip SRB4_linux64.zip && \
+    mkdir intel-opencl && \
+    tar -C intel-opencl -Jxf intel-opencl-r4.0-*.x86_64.tar.xz && \
+    tar -C intel-opencl -Jxf intel-opencl-devel-r4.0-*.x86_64.tar.xz && \
+    tar -C intel-opencl -Jxf intel-opencl-cpu-r4.0-*.x86_64.tar.xz && \
+    cp -R intel-opencl/* / && \
+    ldconfig && \
     # Install build dependencies
     build_deps="automake autoconf bzip2 \
                 cmake freetype-devel gcc \
